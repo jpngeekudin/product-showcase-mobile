@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:product_showcase/views/login_view.dart';
 import 'package:product_showcase/views/home_view.dart';
+import 'package:product_showcase/views/product_list_view.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,6 +19,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => const LoginView(),
         '/home': (context) => const HomeView(),
+        '/admin/product': (context) => const ProductListView(),
       },
       theme: ThemeData(
         // This is the theme of your application.
@@ -40,10 +42,11 @@ class MyApp extends StatelessWidget {
         primaryColor: const Color(0xFFFF7900),
         // Global text input styling
         inputDecorationTheme: InputDecorationTheme(
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 12,
           ),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         ),
         // Global ElevatedButton styling
         elevatedButtonTheme: ElevatedButtonThemeData(
@@ -57,9 +60,14 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: LoginView(),
+      // home: LoginView(),
     );
   }
+}
+
+abstract class AppColors {
+  static Color neutral = Color(0xFFF5F7FA);
+  static Color border = Color(0xFFE6E9F0);
 }
 
 class MyHomePage extends StatefulWidget {
