@@ -153,6 +153,13 @@ class AdminProductListView extends StatelessWidget {
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        tooltip: 'Add Item',
+        onPressed: () {
+          Navigator.of(context).pushNamed('/admin/product/add');
+        },
+        child: const Icon(Icons.add),
+      ),
       body: ListView.separated(
         itemBuilder: (context, i) {
           return AdminItemWidget();
