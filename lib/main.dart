@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:product_showcase/views/home_detail_view.dart';
 import 'package:product_showcase/views/login_view.dart';
 import 'package:product_showcase/views/home_view.dart';
 import 'package:product_showcase/views/admin_product_list_view.dart';
@@ -19,6 +20,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => const LoginView(),
         '/home': (context) => const HomeView(),
+        '/home/detail': (context) => const HomeDetailView(),
         '/admin/product': (context) => const AdminProductListView(),
       },
       theme: ThemeData(

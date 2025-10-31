@@ -41,35 +41,78 @@ class HomeView extends StatelessWidget {
                             ],
                           ),
                         ),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(100),
-                          child: Image.network(
-                            'https://picsum.photos/200',
-                            width: 48,
-                            height: 48,
-                            fit: BoxFit.cover,
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return const SizedBox(
-                                width: 48,
-                                height: 48,
-                                child: Center(
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                  ),
+                        PopupMenuButton(
+                          offset: Offset(0, 48),
+                          itemBuilder: (context) {
+                            return [
+                              PopupMenuItem(
+                                value: 'productManagement',
+                                onTap: () {
+                                  Navigator.of(
+                                    context,
+                                  ).pushNamed('/admin/product');
+                                },
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.add_box),
+                                    SizedBox(width: 8),
+                                    Text('Product Management'),
+                                  ],
                                 ),
-                              );
-                            },
-                            errorBuilder: (context, error, stackTrace) =>
-                                Container(
-                                  width: 48,
-                                  height: 48,
-                                  color: Colors.grey,
-                                  child: const Icon(
-                                    Icons.person,
-                                    color: Colors.white,
-                                  ),
+                              ),
+                              PopupMenuItem(
+                                value: 'userManagement',
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.people),
+                                    SizedBox(width: 8),
+                                    Text('User Management'),
+                                  ],
                                 ),
+                              ),
+                              PopupMenuItem(
+                                value: 'logout',
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.logout),
+                                    SizedBox(width: 8),
+                                    Text('Logout'),
+                                  ],
+                                ),
+                              ),
+                            ];
+                          },
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(100),
+                            child: Image.network(
+                              'https://picsum.photos/200',
+                              width: 48,
+                              height: 48,
+                              fit: BoxFit.cover,
+                              loadingBuilder:
+                                  (context, child, loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return const SizedBox(
+                                      width: 48,
+                                      height: 48,
+                                      child: Center(
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                              errorBuilder: (context, error, stackTrace) =>
+                                  Container(
+                                    width: 48,
+                                    height: 48,
+                                    color: Colors.grey,
+                                    child: const Icon(
+                                      Icons.person,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                            ),
                           ),
                         ),
                       ],
@@ -78,7 +121,10 @@ class HomeView extends StatelessWidget {
                     TextField(
                       decoration: InputDecoration(
                         hintText: 'Cari produk',
-                        contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                        contentPadding: EdgeInsets.symmetric(
+                          vertical: 12,
+                          horizontal: 16,
+                        ),
                         filled: true,
                         fillColor: Colors.grey[100],
                         border: OutlineInputBorder(
@@ -91,7 +137,9 @@ class HomeView extends StatelessWidget {
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(30),
-                          borderSide: BorderSide(color: Theme.of(context).primaryColor),
+                          borderSide: BorderSide(
+                            color: Theme.of(context).primaryColor,
+                          ),
                         ),
                       ),
                     ),
@@ -202,9 +250,14 @@ class HomeView extends StatelessWidget {
                         childAspectRatio: 1 / 1.3,
                       ),
                       itemCount: 10,
-                      itemBuilder: (_, index) => HomeItemWidget(),
                       physics: NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
+                      itemBuilder: (_, index) => InkWell(
+                        onTap: () {
+                          Navigator.of(context).pushNamed('/home/detail');
+                        },
+                        child: HomeItemWidget(),
+                      ),
                     ),
                     SizedBox(height: 10),
                     SizedBox(
