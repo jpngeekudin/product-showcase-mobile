@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:product_showcase/main.dart';
-import 'package:product_showcase/widgets/home_item_widget.dart';
+import 'package:product_showcase/widgets/admin_item_widget.dart';
 
-class ProductListView extends StatelessWidget {
-  const ProductListView({super.key});
+class AdminProductListView extends StatelessWidget {
+  const AdminProductListView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -155,7 +155,7 @@ class ProductListView extends StatelessWidget {
       ),
       body: ListView.separated(
         itemBuilder: (context, i) {
-          return HomeItemWidget();
+          return AdminItemWidget();
         },
         separatorBuilder: (context, i) {
           return SizedBox(height: 8);

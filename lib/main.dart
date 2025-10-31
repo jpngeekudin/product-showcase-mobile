@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:product_showcase/views/login_view.dart';
 import 'package:product_showcase/views/home_view.dart';
-import 'package:product_showcase/views/product_list_view.dart';
+import 'package:product_showcase/views/admin_product_list_view.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => const LoginView(),
         '/home': (context) => const HomeView(),
-        '/admin/product': (context) => const ProductListView(),
+        '/admin/product': (context) => const AdminProductListView(),
       },
       theme: ThemeData(
         // This is the theme of your application.
