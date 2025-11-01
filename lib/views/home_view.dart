@@ -62,6 +62,10 @@ class HomeView extends StatelessWidget {
                               ),
                               PopupMenuItem(
                                 value: 'userManagement',
+                                onTap: () {
+                                  Navigator.of(context)
+                                      .pushNamed('/admin/user');
+                                },
                                 child: Row(
                                   children: [
                                     Icon(Icons.people),
@@ -91,27 +95,27 @@ class HomeView extends StatelessWidget {
                               fit: BoxFit.cover,
                               loadingBuilder:
                                   (context, child, loadingProgress) {
-                                    if (loadingProgress == null) return child;
-                                    return const SizedBox(
-                                      width: 48,
-                                      height: 48,
-                                      child: Center(
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                              errorBuilder: (context, error, stackTrace) =>
-                                  Container(
-                                    width: 48,
-                                    height: 48,
-                                    color: Colors.grey,
-                                    child: const Icon(
-                                      Icons.person,
-                                      color: Colors.white,
+                                if (loadingProgress == null) return child;
+                                return const SizedBox(
+                                  width: 48,
+                                  height: 48,
+                                  child: Center(
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
                                     ),
                                   ),
+                                );
+                              },
+                              errorBuilder: (context, error, stackTrace) =>
+                                  Container(
+                                width: 48,
+                                height: 48,
+                                color: Colors.grey,
+                                child: const Icon(
+                                  Icons.person,
+                                  color: Colors.white,
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -160,25 +164,25 @@ class HomeView extends StatelessWidget {
                               fit: BoxFit.cover,
                               loadingBuilder:
                                   (context, child, loadingProgress) {
-                                    if (loadingProgress == null) return child;
-                                    return const SizedBox(
-                                      height: 200,
-                                      child: Center(
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                              errorBuilder: (context, error, stackTrace) =>
-                                  Container(
-                                    height: 200,
-                                    color: Colors.grey[300],
-                                    child: const Icon(
-                                      Icons.image,
-                                      color: Colors.grey,
+                                if (loadingProgress == null) return child;
+                                return const SizedBox(
+                                  height: 200,
+                                  child: Center(
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
                                     ),
                                   ),
+                                );
+                              },
+                              errorBuilder: (context, error, stackTrace) =>
+                                  Container(
+                                height: 200,
+                                color: Colors.grey[300],
+                                child: const Icon(
+                                  Icons.image,
+                                  color: Colors.grey,
+                                ),
+                              ),
                             ),
                           ),
                         ),

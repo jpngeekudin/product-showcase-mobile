@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:product_showcase/views/admin_product_add_view.dart';
+import 'package:product_showcase/views/admin_user_add_view.dart';
+import 'package:product_showcase/views/admin_user_list_view.dart';
 import 'package:product_showcase/views/home_detail_view.dart';
 import 'package:product_showcase/views/login_view.dart';
 import 'package:product_showcase/views/home_view.dart';
@@ -24,6 +26,8 @@ class MyApp extends StatelessWidget {
         '/home/detail': (context) => const HomeDetailView(),
         '/admin/product': (context) => const AdminProductListView(),
         '/admin/product/add': (context) => const AdminProductAddView(),
+        '/admin/user': (context) => const AdminUserListView(),
+        '/admin/user/add': (context) => const AdminUserAddView()
       },
       theme: ThemeData(
         // This is the theme of your application.
@@ -46,7 +50,12 @@ class MyApp extends StatelessWidget {
         primaryColor: const Color(0xFFFF7900),
         // Global text input styling
         inputDecorationTheme: InputDecorationTheme(
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: AppColors.border)),
+          enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: AppColors.border)),
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 12,
             vertical: 12,
