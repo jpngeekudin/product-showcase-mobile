@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:product_showcase/helpers/http_helper.dart';
 import 'package:product_showcase/main.dart';
+import 'package:product_showcase/models/product_model.dart';
 
 class AdminItemWidget extends StatelessWidget {
-  const AdminItemWidget({super.key});
+  final ProductModel product;
+  const AdminItemWidget({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +26,8 @@ class AdminItemWidget extends StatelessWidget {
                   color: Colors.grey[200],
                   borderRadius: BorderRadius.circular(12),
                   image: DecorationImage(
-                    image: NetworkImage('https://placehold.co/400'),
+                    image: NetworkImage(
+                        '$apiBaseUrl/files/get?path=${product.image}'),
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -33,10 +37,10 @@ class AdminItemWidget extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Meja Makan Kayu Jati'),
+                    Text(product.name),
                     SizedBox(height: 8),
                     Text(
-                      'Rp. 3.400.000',
+                      'Rp. ${product.price}',
                       style: TextStyle(fontWeight: FontWeight.w600),
                     ),
                     SizedBox(height: 8),
@@ -48,7 +52,7 @@ class AdminItemWidget extends StatelessWidget {
                         border: Border.all(color: AppColors.border),
                       ),
                       child: Text(
-                        'Meja',
+                        product.category,
                         style: TextStyle(
                           fontWeight: FontWeight.w500,
                           fontSize: 12,

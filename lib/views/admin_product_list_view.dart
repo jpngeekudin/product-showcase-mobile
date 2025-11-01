@@ -1,9 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:product_showcase/helpers/dio_helper.dart';
 import 'package:product_showcase/main.dart';
+import 'package:product_showcase/models/product_model.dart';
 import 'package:product_showcase/widgets/admin_item_widget.dart';
 
-class AdminProductListView extends StatelessWidget {
+class AdminProductListView extends StatefulWidget {
   const AdminProductListView({super.key});
+
+  @override
+  State<AdminProductListView> createState() => _AdminProductListViewState();
+}
+
+class _AdminProductListViewState extends State<AdminProductListView> {
+  List<ProductModel> _products = [];
+
+  void _getProducts() async {
+    try {
+      final response = await dio.get('/products');
+      setState(() {
+        _products = response.data['data']
+            .map<ProductModel>((e) => ProductModel.fromJson(e))
+            .toList();
+      });
+    } catch (err) {
+      print(err);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getProducts();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -161,13 +189,15 @@ class AdminProductListView extends StatelessWidget {
         child: const Icon(Icons.add),
       ),
       body: ListView.separated(
+        itemCount: _products.length,
         itemBuilder: (context, i) {
-          return AdminItemWidget();
+          return AdminItemWidget(
+            product: _products[i],
+          );
         },
         separatorBuilder: (context, i) {
           return SizedBox(height: 8);
         },
-        itemCount: 10,
       ),
       // body: SingleChildScrollView(
       //   child: Column(

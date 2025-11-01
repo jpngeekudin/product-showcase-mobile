@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:product_showcase/helpers/http_helper.dart';
 import 'package:product_showcase/main.dart';
+import 'package:product_showcase/models/product_model.dart';
 
 class HomeDetailView extends StatefulWidget {
   const HomeDetailView({super.key});
@@ -9,6 +11,18 @@ class HomeDetailView extends StatefulWidget {
 }
 
 class _HomeDetailViewState extends State<HomeDetailView> {
+  late ProductModel _product;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    if (args != null) {
+      _product = args['product'];
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,7 +32,7 @@ class _HomeDetailViewState extends State<HomeDetailView> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Image.network(
-              'https://placehold.co/600x400',
+              '$apiBaseUrl/files/get?path=${_product.image}',
               width: double.infinity,
               height: 250,
               fit: BoxFit.cover,
@@ -47,7 +61,7 @@ class _HomeDetailViewState extends State<HomeDetailView> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Meja Makan Kayu Jati - Ukuran besar 100m2',
+                    _product.name,
                     style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
                   ),
                   SizedBox(height: 8),
@@ -115,20 +129,8 @@ class _HomeDetailViewState extends State<HomeDetailView> {
                     style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
                   ),
                   SizedBox(height: 6),
-                  Text("""
-Hadirkan nuansa mewah dan elegan di ruang makan Anda dengan Meja Makan Kayu Jati – Ukuran Besar 100m². Terbuat dari kayu jati pilihan yang terkenal kokoh, tahan lama, dan memiliki serat alami yang indah, meja ini tidak hanya berfungsi sebagai tempat makan tetapi juga sebagai investasi furnitur jangka panjang.
-
-Dengan ukuran ekstra besar 100m², meja ini sangat ideal untuk ruang makan keluarga besar, acara gathering, atau restoran yang ingin memberikan kesan eksklusif kepada tamunya. Permukaan meja yang luas memungkinkan penataan hidangan lebih leluasa, sementara finishing halusnya memberikan sentuhan elegan sekaligus mudah dibersihkan.
-
-Spesifikasi Produk:
-Material: 100% Kayu Jati Solid
-Ukuran: 100m² (custom ukuran dapat dipesan)
-Warna: Natural kayu jati dengan finishing glossy/matte
-Kapasitas: Hingga 12–16 orang
-Kelebihan: Tahan rayap, kuat, dan berkarakter alami
-
-Kelebihan Produk:  ✅ Material premium, awet hingga puluhan tahun  ✅ Desain elegan dan mewah  ✅ Cocok untuk rumah, villa, atau restoran besar  ✅ Permukaan meja luas dan mudah dibersihkan
-""", style: TextStyle(color: Color(0xFF5B5D63), fontSize: 14)),
+                  Text(_product.description,
+                      style: TextStyle(color: Color(0xFF5B5D63), fontSize: 14)),
                 ],
               ),
             ),
@@ -147,7 +149,7 @@ Kelebihan Produk:  ✅ Material premium, awet hingga puluhan tahun  ✅ Desa
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        'Rp 3.400.000',
+                        'Rp ${_product.price}',
                         style: TextStyle(
                           color: Theme.of(context).primaryColor,
                           fontWeight: FontWeight.w600,

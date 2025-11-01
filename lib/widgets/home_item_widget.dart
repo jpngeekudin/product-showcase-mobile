@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:product_showcase/helpers/http_helper.dart';
+import 'package:product_showcase/models/product_model.dart';
 
 class HomeItemWidget extends StatelessWidget {
-  const HomeItemWidget({super.key});
+  final ProductModel product;
+  const HomeItemWidget({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +15,7 @@ class HomeItemWidget extends StatelessWidget {
         ClipRRect(
           borderRadius: BorderRadius.circular(8),
           child: Image.network(
-            'https://picsum.photos/200',
+            '$apiBaseUrl/files/get?path=${product.image}',
             width: double.infinity,
             height: 130,
             fit: BoxFit.cover,
@@ -34,7 +37,7 @@ class HomeItemWidget extends StatelessWidget {
         ),
         SizedBox(height: 12),
         Text(
-          'Meja Makan Kayu Jati - Ukuran besar 100m2',
+          product.name,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(fontSize: 14),
@@ -44,7 +47,7 @@ class HomeItemWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              'Rp 3.400.000',
+              'Rp ${product.price}',
               style: TextStyle(
                 color: Theme.of(context).primaryColor,
                 fontWeight: FontWeight.w600,

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:product_showcase/helpers/dio_helper.dart';
+import 'package:product_showcase/helpers/http_helper.dart';
 import 'package:product_showcase/main.dart';
+import 'package:product_showcase/models/user_model.dart';
 
 class AdminUserListView extends StatefulWidget {
   const AdminUserListView({super.key});
@@ -9,6 +12,27 @@ class AdminUserListView extends StatefulWidget {
 }
 
 class _AdminUserListViewState extends State<AdminUserListView> {
+  List<UserModel> _users = [];
+
+  void _getUsers() async {
+    try {
+      final response = await dio.get('/user');
+      setState(() {
+        _users = response.data['data']
+            .map<UserModel>((e) => UserModel.fromJson(e))
+            .toList();
+      });
+    } catch (err) {
+      print(err);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getUsers();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -129,7 +153,7 @@ class _AdminUserListViewState extends State<AdminUserListView> {
               color: AppColors.neutral,
             ),
             ListView.separated(
-                itemCount: 10,
+                itemCount: _users.length,
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
                 separatorBuilder: (context, index) {
@@ -145,7 +169,7 @@ class _AdminUserListViewState extends State<AdminUserListView> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
-                          'Black, Marvin',
+                          _users[index].fullname,
                           style: TextStyle(
                               fontWeight: FontWeight.w600, fontSize: 14),
                         ),
@@ -163,24 +187,24 @@ class _AdminUserListViewState extends State<AdminUserListView> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
-                          '+61488827086',
+                          _users[index].phone,
                           style:
-                              TextStyle(color: Color(0xFF5B5D63), fontSize: 12),
+                              TextStyle(color: Color(0xFF5B5D63), fontSize: 11),
                         ),
                         SizedBox(
                           width: 8,
                         ),
                         Text(
-                          'johndoe@gmail.com',
+                          _users[index].email,
                           style:
-                              TextStyle(color: Color(0xFF5B5D63), fontSize: 12),
+                              TextStyle(color: Color(0xFF5B5D63), fontSize: 11),
                         ),
                       ],
                     ),
                     leading: ClipRRect(
                       borderRadius: BorderRadiusGeometry.circular(8),
                       child: Image.network(
-                        'https://placehold.co/600x400',
+                        '$apiBaseUrl/files/get?path=${_users[index].image}',
                         height: 40,
                         width: 40,
                         fit: BoxFit.cover,

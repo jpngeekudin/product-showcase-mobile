@@ -1,9 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:product_showcase/helpers/dio_helper.dart';
 import 'package:product_showcase/main.dart';
+import 'package:product_showcase/models/product_model.dart';
 import 'package:product_showcase/widgets/home_item_widget.dart';
 
-class HomeView extends StatelessWidget {
+class HomeView extends StatefulWidget {
   const HomeView({super.key});
+
+  @override
+  State<HomeView> createState() => _HomeViewState();
+}
+
+class _HomeViewState extends State<HomeView> {
+  List<ProductModel> _products = [];
+
+  void _getProducts() async {
+    try {
+      final response = await dio.get('/products');
+      setState(() {
+        _products = response.data['data']
+            .map<ProductModel>((e) => ProductModel.fromJson(e))
+            .toList();
+      });
+    } catch (err) {
+      print(err);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getProducts();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -253,14 +281,17 @@ class HomeView extends StatelessWidget {
                         crossAxisSpacing: 12,
                         childAspectRatio: 1 / 1.3,
                       ),
-                      itemCount: 10,
+                      itemCount: _products.length,
                       physics: NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
                       itemBuilder: (_, index) => InkWell(
                         onTap: () {
-                          Navigator.of(context).pushNamed('/home/detail');
+                          Navigator.of(context).pushNamed('/home/detail',
+                              arguments: {'product': _products[index]});
                         },
-                        child: HomeItemWidget(),
+                        child: HomeItemWidget(
+                          product: _products[index],
+                        ),
                       ),
                     ),
                     SizedBox(height: 10),
