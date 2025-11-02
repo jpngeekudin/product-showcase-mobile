@@ -24,6 +24,25 @@ class _AdminUserListViewState extends State<AdminUserListView> {
       });
     } catch (err) {
       print(err);
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Failed getting data')));
+    }
+  }
+
+  void _deleteUser(UserModel user) async {
+    try {
+      final response = await dio.delete('/user/products/${user.id}');
+      _getUsers();
+      if (context.mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Success deleting user')));
+      }
+    } catch (err) {
+      print(err);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Failed deleting user')));
+      }
     }
   }
 
@@ -138,8 +157,12 @@ class _AdminUserListViewState extends State<AdminUserListView> {
       ),
       floatingActionButton: FloatingActionButton(
         tooltip: "Add Item",
-        onPressed: () {
-          Navigator.of(context).pushNamed('/admin/user/add');
+        onPressed: () async {
+          final result = await Navigator.of(context)
+              .pushNamed('/admin/user/add') as Map<String, dynamic>;
+          if (result['status']) {
+            _getUsers();
+          }
         },
         child: Icon(Icons.add),
       ),
@@ -226,9 +249,18 @@ class _AdminUserListViewState extends State<AdminUserListView> {
                         ),
                       ),
                     ),
-                    trailing: IconButton(
-                      icon: Icon(Icons.more_horiz),
-                      onPressed: () {},
+                    trailing: PopupMenuButton(
+                      itemBuilder: (context) {
+                        return [
+                          PopupMenuItem(value: 'delete', child: Text('Delete'))
+                        ];
+                      },
+                      onSelected: (value) {
+                        if (value == 'delete') {
+                          _deleteUser(_users[index]);
+                        }
+                      },
+                      child: Icon(Icons.more_horiz),
                     ),
                   );
                 })

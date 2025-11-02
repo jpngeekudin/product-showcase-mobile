@@ -1,8 +1,12 @@
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:product_showcase/helpers/dio_helper.dart';
 import 'package:product_showcase/main.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:product_showcase/models/product_model.dart';
 
 class AdminProductAddView extends StatefulWidget {
   const AdminProductAddView({super.key});
@@ -14,6 +18,83 @@ class AdminProductAddView extends StatefulWidget {
 class _AdminProductAddViewState extends State<AdminProductAddView> {
   final ImagePicker _picker = ImagePicker();
   XFile? _imageFile;
+
+  final _nameController = TextEditingController();
+  final _descriptionController = TextEditingController();
+  final _priceController = TextEditingController(text: '0');
+  final _stockController = TextEditingController(text: '0');
+  String _category = 'fashion';
+  bool _status = true;
+
+  void _initEditedForm() async {
+    final args =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    print(args['edited']);
+    if (args['edited'] != null) {
+      final edited = args['edited'] as ProductModel;
+      _nameController.text = edited.name;
+      _descriptionController.text = edited.description;
+      _priceController.text = edited.price.toString();
+      _stockController.text = edited.stock.toString();
+      setState(() {
+        _category = edited.category;
+      });
+
+      try {
+        final directory = await getTemporaryDirectory();
+        final filePath =
+            '${directory.path}/${edited.image.split('/').last.split('\\').last}';
+        await dio.download('/files/get?path=${edited.image}', filePath);
+        setState(() {
+          _imageFile = XFile(filePath);
+        });
+      } catch (err) {
+        print(err);
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Failed getting image data')));
+      }
+    }
+  }
+
+  void _submit() async {
+    if (_imageFile == null) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Please insert image!')));
+      return;
+    }
+
+    try {
+      final imageFormData = FormData.fromMap({
+        'file': await MultipartFile.fromFile(_imageFile!.path,
+            filename: _imageFile!.name)
+      });
+      final imageResponse = await dio.post('/files/upload?type=product_image',
+          data: imageFormData);
+      final response = await dio.post('/products', data: {
+        'name': _nameController.text,
+        'description': _descriptionController.text,
+        'price': int.parse(_priceController.text),
+        'stock': int.parse(_stockController.text),
+        'category': _category,
+        'image': imageResponse.data['data']
+      });
+      if (context.mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Success saving product')));
+        Navigator.of(context).pop({'status': true});
+      }
+    } catch (err) {
+      print(err);
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Failed saving product')));
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // _initEditedForm();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -93,6 +174,7 @@ class _AdminProductAddViewState extends State<AdminProductAddView> {
                   ),
                   SizedBox(height: 8),
                   TextField(
+                    controller: _nameController,
                     decoration: InputDecoration(
                       hintText: 'Masukkan nama produk',
                     ),
@@ -109,17 +191,20 @@ class _AdminProductAddViewState extends State<AdminProductAddView> {
                     ),
                     items: [
                       DropdownMenuItem(
-                        value: 'makanan',
-                        child: Text('Makanan'),
+                        value: 'fashion',
+                        child: Text('Fashion'),
                       ),
                       DropdownMenuItem(
-                        value: 'minuman',
-                        child: Text('Minuman'),
+                        value: 'furniture',
+                        child: Text('Furniture'),
                       ),
-                      DropdownMenuItem(value: 'snack', child: Text('Snack')),
                     ],
                     onChanged: (value) {
-                      // Handle selection
+                      setState(() {
+                        if (value != null) {
+                          _category = value;
+                        }
+                      });
                     },
                   ),
                   SizedBox(height: 20),
@@ -130,6 +215,7 @@ class _AdminProductAddViewState extends State<AdminProductAddView> {
                   SizedBox(height: 8),
                   TextField(
                     maxLines: 2,
+                    controller: _descriptionController,
                     decoration: InputDecoration(
                       hintText: 'Masukkan deskripsi produk',
                       border: OutlineInputBorder(),
@@ -142,6 +228,8 @@ class _AdminProductAddViewState extends State<AdminProductAddView> {
                   ),
                   SizedBox(height: 8),
                   TextField(
+                    controller: _priceController,
+                    keyboardType: TextInputType.numberWithOptions(),
                     decoration: InputDecoration(
                       hintText: 'Masukkan harga satuan',
                       prefixIcon: SizedBox(
@@ -167,8 +255,10 @@ class _AdminProductAddViewState extends State<AdminProductAddView> {
                       Expanded(
                         flex: 2,
                         child: TextField(
+                          controller: _stockController,
+                          keyboardType: TextInputType.numberWithOptions(),
                           decoration: InputDecoration(
-                            hintText: 'Masukkan nama produk',
+                            hintText: 'Masukkan Stok Awal',
                           ),
                         ),
                       ),
@@ -180,10 +270,6 @@ class _AdminProductAddViewState extends State<AdminProductAddView> {
                             DropdownMenuItem(
                               value: 'unit',
                               child: Text('Unit'),
-                            ),
-                            DropdownMenuItem(
-                              value: 'buah',
-                              child: Text('Buah'),
                             ),
                           ],
                           onChanged: (value) {
@@ -224,7 +310,13 @@ class _AdminProductAddViewState extends State<AdminProductAddView> {
                           children: [
                             Text('Nonaktif'),
                             SizedBox(width: 8),
-                            Switch(value: false, onChanged: (value) {}),
+                            Switch(
+                                value: _status,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _status = value;
+                                  });
+                                }),
                           ],
                         ),
                       ],
@@ -259,12 +351,14 @@ class _AdminProductAddViewState extends State<AdminProductAddView> {
                         SizedBox(width: 16),
                         Expanded(
                           child: ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              _submit();
+                            },
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text('Tambah'),
+                                Text('Simpan'),
                                 SizedBox(width: 8),
                                 Icon(Icons.check),
                               ],

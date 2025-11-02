@@ -91,7 +91,10 @@ class AdminItemWidget extends StatelessWidget {
           Row(
             children: [
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.of(context).pushNamed('/admin/product/add',
+                      arguments: {'edited': product});
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
                   shadowColor: Colors.transparent,

@@ -37,7 +37,7 @@ class UserModel {
         email: json["email"],
         image: json["image"],
         status: json["status"],
-        createdAt: json["created_at"],
+        createdAt: json["created_at"].toInt(),
       );
 
   Map<String, dynamic> toJson() => {

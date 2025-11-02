@@ -183,8 +183,12 @@ class _AdminProductListViewState extends State<AdminProductListView> {
       ),
       floatingActionButton: FloatingActionButton(
         tooltip: 'Add Item',
-        onPressed: () {
-          Navigator.of(context).pushNamed('/admin/product/add');
+        onPressed: () async {
+          final result = await Navigator.of(context)
+              .pushNamed('/admin/product/add') as Map<String, dynamic>;
+          if (result['status']) {
+            _getProducts();
+          }
         },
         child: const Icon(Icons.add),
       ),

@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:product_showcase/helpers/dio_helper.dart';
 import 'package:product_showcase/main.dart';
 
 class AdminUserAddView extends StatefulWidget {
@@ -14,6 +16,48 @@ class AdminUserAddView extends StatefulWidget {
 class _AdminUserAddViewState extends State<AdminUserAddView> {
   final ImagePicker _picker = ImagePicker();
   XFile? _imageFile;
+
+  final _usernameController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _fullnameController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _emailController = TextEditingController();
+  bool _status = true;
+
+  void _submit() async {
+    if (_imageFile == null) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Please insert image!')));
+      return;
+    }
+
+    try {
+      final imageFormData = FormData.fromMap({
+        'file': await MultipartFile.fromFile(_imageFile!.path,
+            filename: _imageFile!.name)
+      });
+      final imageResponse = await dio.post('/files/upload?type=product_image',
+          data: imageFormData);
+      final response = await dio.post('/user', data: {
+        'username': _usernameController.text,
+        'password': _passwordController.text,
+        'fullname': _fullnameController.text,
+        'phone': _phoneController.text,
+        'email': _emailController.text,
+        'status': _status,
+        'image': imageResponse.data['data']
+      });
+      if (context.mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Success saving product')));
+        Navigator.of(context).pop({'status': true});
+      }
+    } catch (err) {
+      print(err);
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Failed saving product')));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -96,13 +140,26 @@ class _AdminUserAddViewState extends State<AdminUserAddView> {
                 ),
                 SizedBox(height: 20),
                 Text(
-                  'Nama User',
+                  'Fullname',
                   style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
                 ),
                 SizedBox(height: 8),
                 TextField(
+                  controller: _fullnameController,
                   decoration: InputDecoration(
-                    hintText: 'Masukkan nama user',
+                    hintText: 'Masukkan full name',
+                  ),
+                ),
+                SizedBox(height: 20),
+                Text(
+                  'Username',
+                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
+                ),
+                SizedBox(height: 8),
+                TextField(
+                  controller: _usernameController,
+                  decoration: InputDecoration(
+                    hintText: 'Masukkan useranme',
                   ),
                 ),
                 SizedBox(height: 20),
@@ -112,6 +169,8 @@ class _AdminUserAddViewState extends State<AdminUserAddView> {
                 ),
                 SizedBox(height: 8),
                 TextField(
+                  controller: _phoneController,
+                  keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     hintText: 'Masukkan no telephone',
                   ),
@@ -123,6 +182,8 @@ class _AdminUserAddViewState extends State<AdminUserAddView> {
                 ),
                 SizedBox(height: 8),
                 TextField(
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
                     hintText: 'Masukkan email',
                   ),
@@ -156,9 +217,15 @@ class _AdminUserAddViewState extends State<AdminUserAddView> {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text('Nonaktif'),
+                          Text(_status ? 'Aktif' : 'Nonaktif'),
                           SizedBox(width: 8),
-                          Switch(value: false, onChanged: (value) {}),
+                          Switch(
+                              value: _status,
+                              onChanged: (value) {
+                                setState(() {
+                                  _status = value;
+                                });
+                              }),
                         ],
                       ),
                     ],
@@ -193,12 +260,14 @@ class _AdminUserAddViewState extends State<AdminUserAddView> {
                       SizedBox(width: 16),
                       Expanded(
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            _submit();
+                          },
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text('Tambah'),
+                              Text('Simpan'),
                               SizedBox(width: 8),
                               Icon(Icons.check),
                             ],
